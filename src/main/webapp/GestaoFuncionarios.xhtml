@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/templates/Layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="corpo">
+		<f:metadata>
+			<f:viewAction action="#{gestaoFuncionariosBean.consultar}" />
+		</f:metadata>
+	
+		<h1>Gestão de Funcionários</h1>
+		
+		<h:form id="frm">
+			
+			<p:messages autoUpdate="true" />
+			
+			<h:panelGrid columns="2" style="margin-top: 20px" id="painel">
+				<p:outputLabel value="Nome" for="nome" />
+				<p:inputText id="nome" size="40" value="#{gestaoFuncionariosBean.funcionarioEdicao.nome}" />
+				
+				<p:outputLabel value="CPF" for="cpf" />
+				<p:inputMask id="cpf" size="15" mask="999.999.999-99" 
+					value="#{gestaoFuncionariosBean.funcionarioEdicao.cpf}" />
+				
+				<p:outputLabel value="Data de admissão" for="dataAdmissao" />
+				<p:calendar id="dataAdmissao" size="10" pattern="dd/MM/yyyy" mask="99/99/9999" 
+					value="#{gestaoFuncionariosBean.funcionarioEdicao.dataAdmissao}" />
+				
+				<p:outputLabel value="Salário" for="salario" />
+				<p:inputText id="salario" size="10" value="#{gestaoFuncionariosBean.funcionarioEdicao.salario}">
+					<f:convertNumber type="number" minFractionDigits="2" maxFractionDigits="2" locale="pt_BR" />
+				</p:inputText>
+				
+				<p:outputLabel value="Status" for="status" />
+				<p:selectOneButton id="status" value="#{gestaoFuncionariosBean.funcionarioEdicao.status}">
+					<f:selectItems value="#{gestaoFuncionariosBean.statuses}" var="status"
+						itemLabel="#{status.descricao}" itemValue="#{status}" />
+				</p:selectOneButton>
+				
+				<p:outputLabel/>
+				<p:commandButton value="Salvar" process="painel" update="@form" 
+					action="#{gestaoFuncionariosBean.salvar}" />
+			</h:panelGrid>
+			
+			<p:dataTable value="#{gestaoFuncionariosBean.todosFuncionarios}" 
+				var="funcionario" border="1" cellpadding="2" cellspacing="0"
+				paginator="true" paginatorPosition="bottom" rows="5" id="funcionariosTable"
+				style="margin-top: 20px">
+				
+				<p:column headerText="Nome">
+					<h:outputText value="#{funcionario.nome}"/>
+				</p:column>
+				<p:column headerText="CPF" width="100">
+					<h:outputText value="#{funcionario.cpf}"/>
+				</p:column>
+				<p:column headerText="Data de admissão" width="120" style="text-align: center">
+					<h:outputText value="#{funcionario.dataAdmissao}">
+						<f:convertDateTime type="date" locale="pt_BR" timeZone="America/Sao_Paulo" />
+					</h:outputText>
+				</p:column>
+				<p:column headerText="Salário" width="100" style="text-align: right">
+					<h:outputText value="#{funcionario.salario}">
+						<f:convertNumber locale="pt_BR" type="currency" />
+					</h:outputText>
+				</p:column>
+				<p:column headerText="Status" width="100">
+					<h:outputText value="#{funcionario.status.descricao}" />
+				</p:column>
+				<p:column width="70">
+					<p:commandButton icon="ui-icon-trash" process="@this" update="funcionariosTable" 
+							action="#{gestaoFuncionariosBean.excluir(funcionario)}">
+						<p:confirm icon="ui-icon-alert" header="Confirmação de exclusão" 
+							message="Tem certeza que deseja excluir o funcionário?" />
+					</p:commandButton>
+					<p:commandButton icon="ui-icon-pencil" process="@this" update="@form">
+						<f:setPropertyActionListener value="#{funcionario}" 
+							target="#{gestaoFuncionariosBean.funcionarioEdicao}" />
+					</p:commandButton>
+				</p:column>
+				
+			</p:dataTable>
+		</h:form>
+		
+	</ui:define>
+
+</ui:composition>
